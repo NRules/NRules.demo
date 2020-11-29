@@ -11,6 +11,8 @@ namespace NRules.Samples.ClaimsCenter.Applications.Modules
         {
             builder.RegisterType<MessageService>()
                 .AsImplementedInterfaces().SingleInstance();
+            builder.RegisterType<SettingsService>()
+                .AsImplementedInterfaces().SingleInstance();
 
             builder.RegisterType<ApplicationController>()
                 .AsImplementedInterfaces().SingleInstance();

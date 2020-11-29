@@ -1,28 +1,26 @@
-﻿using System.ServiceModel;
-using Common.Logging;
+﻿using System.Threading.Tasks;
+using Grpc.Core;
 using NRules.Samples.ClaimsExpert.Contract;
 using NRules.Samples.ClaimsExpert.Domain;
+using Serilog;
 
 namespace NRules.Samples.ClaimsExpert.Service.Services
 {
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall, IncludeExceptionDetailInFaults = true)]
-    public class AdjudicationService : IAdjudicationService
+    public class AdjudicationServiceImpl : AdjudicationService.AdjudicationServiceBase
     {
-        private static readonly ILog Log = LogManager.GetLogger<AdjudicationService>();
-
         private readonly ISessionFactory _sessionFactory;
         private readonly IClaimRepository _claimRepository;
 
-        public AdjudicationService(ISessionFactory sessionFactory, IClaimRepository claimRepository)
+        public AdjudicationServiceImpl(ISessionFactory sessionFactory, IClaimRepository claimRepository)
         {
             _sessionFactory = sessionFactory;
             _claimRepository = claimRepository;
         }
 
-        public void Adjudicate(long claimId)
+        public override Task<AdjudicationResponse> Adjudicate(AdjudicationRequest request, ServerCallContext context)
         {
-            var claim = _claimRepository.GetById(claimId);
-            Log.InfoFormat("Adjudicating claim. ClaimId={0}", claimId);
+            var claim = _claimRepository.GetById(request.ClaimId);
+            Log.Information("Adjudicating claim. ClaimId={0}", request.ClaimId);
 
             claim.Alerts.Clear();
             claim.Status = ClaimStatus.Open;
@@ -40,6 +38,8 @@ namespace NRules.Samples.ClaimsExpert.Service.Services
                 claim.Alerts.Add(alert);
             }
             _claimRepository.Save(claim);
+
+            return Task.FromResult(new AdjudicationResponse());
         }
     }
 }

@@ -1,8 +1,7 @@
-﻿using System.Configuration;
-using Autofac;
+﻿using Autofac;
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
-using NRules.Samples.ClaimsExpert.Domain;
+using Microsoft.Extensions.Configuration;
 using NRules.Samples.ClaimsExpert.Domain.Modules;
 
 namespace NRules.Samples.ClaimsExpert.Service.Modules
@@ -11,16 +10,16 @@ namespace NRules.Samples.ClaimsExpert.Service.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.Register(c => CreateSessionFactory())
+            builder.Register(c => CreateSessionFactory(c.Resolve<IConfiguration>()))
                 .As<NHibernate.ISessionFactory>().SingleInstance()
                 .AutoActivate();
             builder.Register(c => c.Resolve<NHibernate.ISessionFactory>().OpenSession())
                 .As<NHibernate.ISession>().InstancePerDependency();
         }
 
-        private NHibernate.ISessionFactory CreateSessionFactory()
+        private NHibernate.ISessionFactory CreateSessionFactory(IConfiguration config)
         {
-            var databaseFile = ConfigurationManager.AppSettings["databaseFile"];
+            var databaseFile = config["databaseFile"];
             var configuration = Fluently.Configure()
                 .Database(SQLiteConfiguration.Standard.UsingFile(databaseFile))
                 .Mappings(m => m.FluentMappings.AddFromAssemblyOf<DomainModule>());

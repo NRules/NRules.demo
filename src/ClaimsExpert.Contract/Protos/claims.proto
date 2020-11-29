@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+option csharp_namespace = "NRules.Samples.ClaimsExpert.Contract";
+
+package NRules.Samples.ClaimsExpert;
+
+service ClaimService {
+  rpc GetAll (GetAllClaimsRequest) returns (stream ClaimDto);
+  rpc FindByClaimId (FindByClaimIdRequest) returns (ClaimDto);
+}
+
+message GetAllClaimsRequest {
+}
+
+message FindByClaimIdRequest {
+	int64 ClaimId = 1;
+}
+
+message ClaimAlertDto {
+    string Message = 1;
+    string RuleName = 2;
+}
+
+enum AdjudicationStatus
+{
+	Open = 0;
+	Approved = 1;
+	Denied = 2;
+	Review = 3;
+}
+
+message ClaimDto {
+	int64 Id = 1;
+	string ClaimType = 2;
+	AdjudicationStatus Status = 3;
+	string PatientFirstName = 4;
+	string PatientLastName = 5;
+	string PatientMiddleName = 6;
+	string PatientAddressLine1 = 7;
+	string PatientAddressLine2 = 8;
+	string PatientAddressCity = 9;
+	string PatientAddressState = 10;
+	string PatientAddressZip = 11;
+	repeated ClaimAlertDto Alerts = 12;
+}

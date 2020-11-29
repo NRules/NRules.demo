@@ -8,7 +8,7 @@ namespace NRules.Samples.DataGenerator
     {
         private static void Main(string[] args)
         {
-            string databaseFile = Path.GetFullPath(@"..\..\..\Data\ClaimsExpert.sqlite");
+            string databaseFile = Path.GetFullPath(@"..\..\..\..\Data\ClaimsExpert.sqlite");
             if (args.Length == 1)
             {
                 databaseFile = args[0];
@@ -26,21 +26,19 @@ namespace NRules.Samples.DataGenerator
             Console.WriteLine("Creating database. File={0}", databaseFile);
             SQLiteConnection.CreateFile(databaseFile);
 
-            string connectionString = string.Format("Data Source={0};Version=3;", databaseFile);
-            using (var connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-                connection.Trace += DatabaseTrace;
+            string connectionString = $"Data Source={databaseFile};Version=3;";
+            using var connection = new SQLiteConnection(connectionString);
+            connection.Open();
+            connection.Trace += DatabaseTrace;
 
-                var scripts = new[] { @"Scripts\Schema.sql", @"Scripts\Data.sql" };
-                foreach (var script in scripts)
-                {
-                    var scriptFile = Path.GetFullPath(script);
-                    Console.WriteLine("Executing script. File={0}", scriptFile);
-                    string sql = File.ReadAllText(script);
-                    var command = new SQLiteCommand(sql, connection);
-                    command.ExecuteNonQuery();
-                }
+            var scripts = new[] { @"Scripts\Schema.sql", @"Scripts\Data.sql" };
+            foreach (var script in scripts)
+            {
+                var scriptFile = Path.GetFullPath(script);
+                Console.WriteLine("Executing script. File={0}", scriptFile);
+                string sql = File.ReadAllText(script);
+                var command = new SQLiteCommand(sql, connection);
+                command.ExecuteNonQuery();
             }
         }
 

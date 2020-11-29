@@ -14,7 +14,7 @@ namespace NRules.Samples.ClaimsExpert.Domain.Mappings
             Map(x => x.PlanName);
 
             Component(x => x.Name);
-            Component(x => x.Address).ColumnPrefix("InsuredAddress");
+            Component(x => x.Address).ColumnPrefix("Address");
         }
     }
 }

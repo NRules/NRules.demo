@@ -10,23 +10,27 @@ namespace NRules.Samples.ClaimsExpert.Service.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            Mapper.CreateMap<Claim, ClaimDto>()
-                .ForMember(dest => dest.PatientFirstName, x => x.MapFrom(src => src.Patient.Name.FirstName))
-                .ForMember(dest => dest.PatientMiddleName, x => x.MapFrom(src => src.Patient.Name.MiddleName))
-                .ForMember(dest => dest.PatientLastName, x => x.MapFrom(src => src.Patient.Name.LastName));
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.AllowNullDestinationValues = false;
 
-            Mapper.CreateMap<ClaimAlert, ClaimAlertDto>();
+                cfg.CreateMap<Claim, ClaimDto>()
+                    .ForMember(dest => dest.PatientFirstName, x => x.MapFrom(src => src.Patient.Name.FirstName))
+                    .ForMember(dest => dest.PatientMiddleName, x => x.MapFrom(src => src.Patient.Name.MiddleName))
+                    .ForMember(dest => dest.PatientLastName, x => x.MapFrom(src => src.Patient.Name.LastName));
 
-            Mapper.CreateMap<ClaimStatus, AdjudicationStatus>()
-                .ConvertUsing(src =>
-                {
-                    var result = AdjudicationStatus.Open;
-                    Enum.TryParse(src.ToString(), true, out result);
-                    return result;
-                });
+                cfg.CreateMap<ClaimAlert, ClaimAlertDto>();
 
-            Mapper.CreateMap<ClaimType, string>()
-                .ConvertUsing(src => src.ToString());
+                cfg.CreateMap<ClaimStatus, AdjudicationStatus>()
+                    .ConvertUsing((src, tgt) => Enum.TryParse(src.ToString(), true, out AdjudicationStatus result)
+                        ? result
+                        : AdjudicationStatus.Open);
+
+                cfg.CreateMap<ClaimType, string>()
+                    .ConvertUsing(src => src.ToString());
+            });
+            var mapper = config.CreateMapper();
+            builder.Register(c => mapper).As<IMapper>();
         }
     }
 }

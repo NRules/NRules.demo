@@ -2,7 +2,7 @@
 
 namespace NRules.Samples.ClaimsExpert.Domain
 {
-    public struct Name : IEquatable<Name>
+    public struct Name
     {
         public static readonly Name Empty = new Name();
 
@@ -10,33 +10,21 @@ namespace NRules.Samples.ClaimsExpert.Domain
         public string LastName { get; set; }
         public string MiddleName { get; set; }
 
-        public bool IsEmpty
-        {
-            get { return Equals(Empty); }
-        }
+        public bool IsEmpty => Equals(Empty);
 
         public bool Equals(Name other)
         {
-            return string.Equals(FirstName, other.FirstName) &&
-                   string.Equals(LastName, other.LastName) &&
-                   string.Equals(MiddleName, other.MiddleName);
+            return FirstName == other.FirstName && LastName == other.LastName && MiddleName == other.MiddleName;
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            return obj is Name && Equals((Name) obj);
+            return obj is Name other && Equals(other);
         }
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                var hashCode = (FirstName != null ? FirstName.GetHashCode() : 0);
-                hashCode = (hashCode*397) ^ (LastName != null ? LastName.GetHashCode() : 0);
-                hashCode = (hashCode*397) ^ (MiddleName != null ? MiddleName.GetHashCode() : 0);
-                return hashCode;
-            }
+            return HashCode.Combine(FirstName, LastName, MiddleName);
         }
     }
 }

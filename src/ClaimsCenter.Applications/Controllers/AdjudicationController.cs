@@ -16,12 +16,12 @@ namespace NRules.Samples.ClaimsCenter.Applications.Controllers
     {
         private readonly Lazy<MainViewModel> _mainViewModel;
         private readonly Lazy<ClaimViewModel> _claimViewModel;
-        private readonly Func<Owned<IAdjudicationService>> _adjudicationServiceFactory;
+        private readonly Func<Owned<AdjudicationService.AdjudicationServiceClient>> _adjudicationServiceFactory;
         private readonly IClaimController _claimController;
         private readonly ICommand _adjudicateCommand;
 
         public AdjudicationController(Lazy<MainViewModel> mainViewModel, Lazy<ClaimViewModel> claimViewModel, 
-            Func<Owned<IAdjudicationService>> adjudicationServiceFactory, IClaimController claimController)
+            Func<Owned<AdjudicationService.AdjudicationServiceClient>> adjudicationServiceFactory, IClaimController claimController)
         {
             _mainViewModel = mainViewModel;
             _claimViewModel = claimViewModel;
@@ -39,7 +39,7 @@ namespace NRules.Samples.ClaimsCenter.Applications.Controllers
         {
             using (var service = _adjudicationServiceFactory())
             {
-                service.Value.Adjudicate(claim.Id);
+                service.Value.Adjudicate(new AdjudicationRequest {ClaimId = claim.Id});
             }
             _claimController.RefreshSelected();
         }

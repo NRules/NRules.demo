@@ -11,6 +11,6 @@ namespace NRules.Samples.ClaimsExpert.Domain
         public virtual Patient Patient { get; set; }
         public virtual Insured Insured { get; set; }
 
-        public virtual bool Open { get { return Status == ClaimStatus.Open; } }
+        public virtual bool Open => Status == ClaimStatus.Open;
     }
 }

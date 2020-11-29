@@ -1,5 +1,4 @@
 ﻿using System;
-using NRules.Samples.ClaimsCenter.Applications.Properties;
 using NRules.Samples.ClaimsCenter.Applications.ViewModels;
 
 namespace NRules.Samples.ClaimsCenter.Applications.Controllers
@@ -34,7 +33,6 @@ namespace NRules.Samples.ClaimsCenter.Applications.Controllers
 
         public void Shutdown()
         {
-            Settings.Default.Save();
         }
 
         public void Dispose()

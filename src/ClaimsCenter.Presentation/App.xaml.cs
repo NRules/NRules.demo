@@ -5,6 +5,7 @@ using System.Waf.Applications;
 using System.Windows;
 using System.Windows.Threading;
 using Autofac;
+using Microsoft.Extensions.Configuration;
 using NRules.Samples.ClaimsCenter.Applications.Controllers;
 using NRules.Samples.ClaimsCenter.Applications.Modules;
 using NRules.Samples.ClaimsCenter.Presentation.Modules;
@@ -22,11 +23,14 @@ namespace NRules.Samples.ClaimsCenter.Presentation
             DispatcherUnhandledException += AppDispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += AppDomainUnhandledException;
 
-            var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterAssemblyModules(typeof(ApplicationModule).Assembly);
-            containerBuilder.RegisterAssemblyModules(typeof(PresentationModule).Assembly);
+            var config = BuildConfiguration();
+            
+            var builder = new ContainerBuilder();
+            builder.Register(c => config).As<IConfiguration>();
+            builder.RegisterAssemblyModules(typeof(ApplicationModule).Assembly);
+            builder.RegisterAssemblyModules(typeof(PresentationModule).Assembly);
 
-            Container = containerBuilder.Build();
+            Container = builder.Build();
             var controller = Container.Resolve<IApplicationController>();
             controller.Start();
         }
@@ -58,6 +62,14 @@ namespace NRules.Samples.ClaimsCenter.Presentation
                 MessageBox.Show(string.Format(CultureInfo.CurrentCulture, "Unknown error: {0}", e), 
                     ApplicationInfo.ProductName, MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private static IConfigurationRoot BuildConfiguration()
+        {
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .Build();
+            return config;
         }
     }
 }

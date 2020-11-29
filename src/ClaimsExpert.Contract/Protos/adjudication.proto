@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "NRules.Samples.ClaimsExpert.Contract";
+
+package NRules.Samples.ClaimsExpert;
+
+service AdjudicationService {
+    rpc Adjudicate(AdjudicationRequest) returns (AdjudicationResponse);
+}
+
+message AdjudicationRequest {
+    int64 ClaimId = 1;
+}
+
+message AdjudicationResponse {
+
+}

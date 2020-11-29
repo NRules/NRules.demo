@@ -1,32 +1,35 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.ServiceModel;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
+using Grpc.Core;
+using Grpc.Core.Utils;
 using NRules.Samples.ClaimsExpert.Contract;
 using NRules.Samples.ClaimsExpert.Domain;
 
 namespace NRules.Samples.ClaimsExpert.Service.Services
 {
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall, IncludeExceptionDetailInFaults = true)]
-    public class ClaimService : IClaimService
+    public class ClaimServiceImpl : ClaimService.ClaimServiceBase
     {
+        private readonly IMapper _mapper;
         private readonly IClaimRepository _claimRepository;
 
-        public ClaimService(IClaimRepository claimRepository)
+        public ClaimServiceImpl(IMapper mapper, IClaimRepository claimRepository)
         {
+            _mapper = mapper;
             _claimRepository = claimRepository;
         }
 
-        public IEnumerable<ClaimDto> GetAll()
+        public override async Task GetAll(GetAllClaimsRequest request, IServerStreamWriter<ClaimDto> responseStream, ServerCallContext context)
         {
-            var claims = _claimRepository.GetAll().Select(Mapper.Map<ClaimDto>);
-            return claims;
+            var claims = _claimRepository.GetAll().ToArray();
+            var claimDtos = claims.Select(_mapper.Map<ClaimDto>).ToArray();
+            await responseStream.WriteAllAsync(claimDtos);
         }
 
-        public ClaimDto GetById(long claimId)
+        public override Task<ClaimDto> FindByClaimId(FindByClaimIdRequest request, ServerCallContext context)
         {
-            var claim = _claimRepository.GetById(claimId);
-            return Mapper.Map<ClaimDto>(claim);
+            var claim = _claimRepository.GetById(request.ClaimId);
+            return Task.FromResult(_mapper.Map<ClaimDto>(claim));
         }
     }
 }

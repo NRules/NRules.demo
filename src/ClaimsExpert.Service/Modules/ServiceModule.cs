@@ -1,7 +1,7 @@
+using System;
 using System.Configuration;
 using Autofac;
-using NRules.Samples.ClaimsExpert.Contract;
-using NRules.Samples.ClaimsExpert.Rules;
+using Microsoft.Extensions.Configuration;
 using NRules.Samples.ClaimsExpert.Service.Services;
 
 namespace NRules.Samples.ClaimsExpert.Service.Modules
@@ -10,22 +10,20 @@ namespace NRules.Samples.ClaimsExpert.Service.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            var adjudicationServiceAddress = ConfigurationManager.AppSettings["adjudicationServiceAddress"];
-            var claimServiceAddress = ConfigurationManager.AppSettings["claimServiceAddress"];
             builder.RegisterType<ServiceController>()
                 .WithParameter(
-                    (pi, c) => pi.Name == "adjudicationServiceAddress",
-                    (pi, c) => adjudicationServiceAddress)
+                    (pi, c) => pi.Name == "grpcEndpointHostname",
+                    (pi, c) => c.Resolve<IConfiguration>()["grpcEndpointHostname"])
                 .WithParameter(
-                    (pi, c) => pi.Name == "claimServiceAddress",
-                    (pi, c) => claimServiceAddress)
+                    (pi, c) => pi.Name == "grpcEndpointPort",
+                    (pi, c) => Int32.Parse(c.Resolve<IConfiguration>()["grpcEndpointPort"]))
                 .AsImplementedInterfaces().SingleInstance();
-            builder.RegisterType<AdjudicationService>()
-                .As<IAdjudicationService>().InstancePerDependency();
-            builder.RegisterType<ClaimService>()
-                .As<IClaimService>().InstancePerDependency();
+            builder.RegisterType<AdjudicationServiceImpl>()
+                .AsSelf().InstancePerDependency();
+            builder.RegisterType<ClaimServiceImpl>()
+                .AsSelf().InstancePerDependency();
             builder.RegisterType<NotificationService>()
-                .As<INotificationService>().InstancePerDependency();
+                .AsImplementedInterfaces().InstancePerDependency();
         }
     }
 }
