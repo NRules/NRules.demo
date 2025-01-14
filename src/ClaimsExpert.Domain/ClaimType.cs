@@ -1,9 +1,8 @@
-namespace NRules.Samples.ClaimsExpert.Domain
+namespace NRules.Samples.ClaimsExpert.Domain;
+
+public enum ClaimType
 {
-    public enum ClaimType
-    {
-        Unspecified = 0,
-        Professional = 1,
-        Institutional = 2,
-    }
+    Unspecified = 0,
+    Professional = 1,
+    Institutional = 2,
 }

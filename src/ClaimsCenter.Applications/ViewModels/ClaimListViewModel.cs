@@ -3,27 +3,26 @@ using System.Waf.Applications;
 using NRules.Samples.ClaimsCenter.Applications.Views;
 using NRules.Samples.ClaimsExpert.Contract;
 
-namespace NRules.Samples.ClaimsCenter.Applications.ViewModels
+namespace NRules.Samples.ClaimsCenter.Applications.ViewModels;
+
+public class ClaimListViewModel : ViewModel<IClaimListView>
 {
-    public class ClaimListViewModel : ViewModel<IClaimListView>
+    private ObservableCollection<ClaimDto> _claims = [];
+    private ClaimDto? _selectedClaim;
+
+    public ClaimListViewModel(IClaimListView view) : base(view)
     {
-        private ObservableCollection<ClaimDto> _claims = [];
-        private ClaimDto? _selectedClaim;
+    }
 
-        public ClaimListViewModel(IClaimListView view) : base(view)
-        {
-        }
+    public ObservableCollection<ClaimDto> Claims
+    {
+        get => _claims;
+        set { SetProperty(ref _claims, value); }
+    }
 
-        public ObservableCollection<ClaimDto> Claims
-        {
-            get => _claims;
-            set { SetProperty(ref _claims, value); }
-        }
-
-        public ClaimDto? SelectedClaim
-        {
-            get => _selectedClaim;
-            set { SetProperty(ref _selectedClaim, value); }
-        }
+    public ClaimDto? SelectedClaim
+    {
+        get => _selectedClaim;
+        set { SetProperty(ref _selectedClaim, value); }
     }
 }

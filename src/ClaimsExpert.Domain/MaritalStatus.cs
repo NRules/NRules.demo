@@ -1,10 +1,9 @@
-﻿namespace NRules.Samples.ClaimsExpert.Domain
+﻿namespace NRules.Samples.ClaimsExpert.Domain;
+
+public enum MaritalStatus
 {
-    public enum MaritalStatus
-    {
-        Unspecified = 0,
-        Single = 1,
-        Married = 2,
-        Other = 3,
-    }
+    Unspecified = 0,
+    Single = 1,
+    Married = 2,
+    Other = 3,
 }

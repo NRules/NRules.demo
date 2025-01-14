@@ -1,10 +1,9 @@
-﻿namespace NRules.Samples.ClaimsExpert.Domain
+﻿namespace NRules.Samples.ClaimsExpert.Domain;
+
+public enum ClaimStatus
 {
-    public enum ClaimStatus
-    {
-        Open = 0,
-        Approved = 1,
-        Denied = 2,
-        Review = 3,
-    }
+    Open = 0,
+    Approved = 1,
+    Denied = 2,
+    Review = 3,
 }

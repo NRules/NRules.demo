@@ -1,9 +1,8 @@
-﻿namespace NRules.Samples.ClaimsExpert.Domain
+﻿namespace NRules.Samples.ClaimsExpert.Domain;
+
+public enum Sex
 {
-    public enum Sex
-    {
-        Unspecified = 0,
-        Male = 1,
-        Female = 2,
-    }
+    Unspecified = 0,
+    Male = 1,
+    Female = 2,
 }

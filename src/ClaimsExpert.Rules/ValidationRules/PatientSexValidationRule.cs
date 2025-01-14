@@ -1,22 +1,21 @@
 using NRules.Fluent.Dsl;
 using NRules.Samples.ClaimsExpert.Domain;
 
-namespace NRules.Samples.ClaimsExpert.Rules.ValidationRules
+namespace NRules.Samples.ClaimsExpert.Rules.ValidationRules;
+
+[Name("Patient sex validation")]
+public class PatientSexValidationRule : Rule
 {
-    [Name("Patient sex validation")]
-    public class PatientSexValidationRule : Rule
+    public override void Define()
     {
-        public override void Define()
-        {
-            Claim claim = null!;
+        Claim claim = null!;
 
-            When()
-                .Claim(() => claim, c => c.Open)
-                .Patient(p => p == claim.Patient,
-                    p => p.Sex == Sex.Unspecified);
+        When()
+            .Claim(() => claim, c => c.Open)
+            .Patient(p => p == claim.Patient,
+                p => p.Sex == Sex.Unspecified);
 
-            Then()
-                .Error(claim, "Patient sex not specified");
-        }
+        Then()
+            .Error(claim, "Patient sex not specified");
     }
 }

@@ -1,24 +1,23 @@
 ﻿using FluentNHibernate.Mapping;
 
-namespace NRules.Samples.ClaimsExpert.Domain.Mappings
+namespace NRules.Samples.ClaimsExpert.Domain.Mappings;
+
+public class ClaimMap : ClassMap<Claim>
 {
-    public class ClaimMap : ClassMap<Claim>
+    public ClaimMap()
     {
-        public ClaimMap()
-        {
-            Table("Claim");
+        Table("Claim");
 
-            Id(x => x.Id);
+        Id(x => x.Id);
 
-            Map(x => x.ClaimType);
-            Map(x => x.Status);
+        Map(x => x.ClaimType);
+        Map(x => x.Status);
 
-            Component(x => x.Patient).ColumnPrefix("Patient");
-            Component(x => x.Insured).ColumnPrefix("Insured");
+        Component(x => x.Patient).ColumnPrefix("Patient");
+        Component(x => x.Insured).ColumnPrefix("Insured");
 
-            HasMany(x => x.Alerts).KeyColumn("ClaimId")
-                .Cascade.AllDeleteOrphan()
-                .Inverse().Fetch.Join().Not.LazyLoad();
-        }
+        HasMany(x => x.Alerts).KeyColumn("ClaimId")
+            .Cascade.AllDeleteOrphan()
+            .Inverse().Fetch.Join().Not.LazyLoad();
     }
 }

@@ -1,20 +1,19 @@
 ﻿using FluentNHibernate.Mapping;
 
-namespace NRules.Samples.ClaimsExpert.Domain.Mappings
+namespace NRules.Samples.ClaimsExpert.Domain.Mappings;
+
+public class ClaimAlertMap : ClassMap<ClaimAlert>
 {
-    public class ClaimAlertMap : ClassMap<ClaimAlert>
+    public ClaimAlertMap()
     {
-        public ClaimAlertMap()
-        {
-            Table("ClaimAlert");
+        Table("ClaimAlert");
 
-            Id(x => x.Id).GeneratedBy.Identity();
+        Id(x => x.Id).GeneratedBy.Identity();
             
-            Map(x => x.Severity);
-            Map(x => x.RuleName);
-            Map(x => x.Message);
+        Map(x => x.Severity);
+        Map(x => x.RuleName);
+        Map(x => x.Message);
 
-            References(x => x.Claim, "ClaimId").Fetch.Join();
-        }
+        References(x => x.Claim, "ClaimId").Fetch.Join();
     }
 }

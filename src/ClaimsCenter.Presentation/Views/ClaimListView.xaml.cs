@@ -3,19 +3,18 @@ using System.Waf.Applications;
 using NRules.Samples.ClaimsCenter.Applications.ViewModels;
 using NRules.Samples.ClaimsCenter.Applications.Views;
 
-namespace NRules.Samples.ClaimsCenter.Presentation.Views
+namespace NRules.Samples.ClaimsCenter.Presentation.Views;
+
+public partial class ClaimListView : IClaimListView
 {
-    public partial class ClaimListView : IClaimListView
+    private readonly Lazy<ClaimListViewModel> _viewModel;
+
+    public ClaimListView()
     {
-        private readonly Lazy<ClaimListViewModel> _viewModel;
+        InitializeComponent();
 
-        public ClaimListView()
-        {
-            InitializeComponent();
-
-            _viewModel = new Lazy<ClaimListViewModel>(() => this.GetViewModel<ClaimListViewModel>()!);
-        }
-
-        private ClaimListViewModel ViewModel => _viewModel.Value;
+        _viewModel = new Lazy<ClaimListViewModel>(() => this.GetViewModel<ClaimListViewModel>()!);
     }
+
+    private ClaimListViewModel ViewModel => _viewModel.Value;
 }

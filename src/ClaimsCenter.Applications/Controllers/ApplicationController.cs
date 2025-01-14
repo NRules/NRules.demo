@@ -1,43 +1,42 @@
 ﻿using System;
 using NRules.Samples.ClaimsCenter.Applications.ViewModels;
 
-namespace NRules.Samples.ClaimsCenter.Applications.Controllers
+namespace NRules.Samples.ClaimsCenter.Applications.Controllers;
+
+public interface IApplicationController
 {
-    public interface IApplicationController
+    void Start();
+}
+
+internal class ApplicationController : IApplicationController, IDisposable
+{
+    private readonly Lazy<MainViewModel> _mainViewModel;
+    private readonly IAdjudicationController _adjudicationController;
+    private readonly IClaimController _claimController;
+
+    public ApplicationController(Lazy<MainViewModel> mainViewModel, IAdjudicationController adjudicationController, IClaimController claimController)
     {
-        void Start();
+        _mainViewModel = mainViewModel;
+        _adjudicationController = adjudicationController;
+        _claimController = claimController;
     }
 
-    internal class ApplicationController : IApplicationController, IDisposable
+    public void Start()
     {
-        private readonly Lazy<MainViewModel> _mainViewModel;
-        private readonly IAdjudicationController _adjudicationController;
-        private readonly IClaimController _claimController;
+        _adjudicationController.Initialize();
+        _claimController.Initialize();
 
-        public ApplicationController(Lazy<MainViewModel> mainViewModel, IAdjudicationController adjudicationController, IClaimController claimController)
-        {
-            _mainViewModel = mainViewModel;
-            _adjudicationController = adjudicationController;
-            _claimController = claimController;
-        }
-
-        public void Start()
-        {
-            _adjudicationController.Initialize();
-            _claimController.Initialize();
-
-            _mainViewModel.Value.Show();
+        _mainViewModel.Value.Show();
             
-            _claimController.Refresh();
-        }
+        _claimController.Refresh();
+    }
 
-        public void Shutdown()
-        {
-        }
+    public void Shutdown()
+    {
+    }
 
-        public void Dispose()
-        {
-            Shutdown();
-        }
+    public void Dispose()
+    {
+        Shutdown();
     }
 }

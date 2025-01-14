@@ -1,12 +1,11 @@
 ﻿using NRules.Samples.ClaimsCenter.Applications.Views;
 
-namespace NRules.Samples.ClaimsCenter.Presentation.Views
+namespace NRules.Samples.ClaimsCenter.Presentation.Views;
+
+public partial class ClaimView : IClaimView
 {
-    public partial class ClaimView : IClaimView
+    public ClaimView()
     {
-        public ClaimView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }
