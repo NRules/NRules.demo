@@ -9,7 +9,7 @@ namespace NRules.Samples.ClaimsExpert.Service
 {
     public class Program
     {
-        private static IContainer Container { get; set; }
+        private static IContainer? Container { get; set; }
 
         private static void Main(string[] args)
         {
@@ -24,7 +24,7 @@ namespace NRules.Samples.ClaimsExpert.Service
                 {
                     s.ConstructUsing(name => BuildServiceController());
                     s.WhenStarted(sc => sc.Start());
-                    s.WhenStopped(sc => Container.Dispose());
+                    s.WhenStopped(sc => Container?.Dispose());
                     s.AfterStartingService(() => Log.Information("Claims expert service started"));
                     s.AfterStoppingService(() => Log.Information("Claims expert service stopped"));
                 });

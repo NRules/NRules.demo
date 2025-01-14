@@ -8,8 +8,8 @@ namespace NRules.Samples.ClaimsExpert.Rules.ValidationRules
     {
         public override void Define()
         {
-            Claim claim = null;
-            Patient patient = null;
+            Claim claim = null!;
+            Patient patient = null!;
 
             When()
                 .Claim(() => claim, c => c.Open)

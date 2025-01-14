@@ -13,12 +13,9 @@ namespace NRules.Samples.ClaimsCenter.Presentation.Views
         {
             InitializeComponent();
 
-            _viewModel = new Lazy<ClaimListViewModel>(this.GetViewModel<ClaimListViewModel>);
+            _viewModel = new Lazy<ClaimListViewModel>(() => this.GetViewModel<ClaimListViewModel>()!);
         }
 
-        private ClaimListViewModel ViewModel
-        {
-            get { return _viewModel.Value; }
-        }
+        private ClaimListViewModel ViewModel => _viewModel.Value;
     }
 }

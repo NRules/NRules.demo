@@ -15,9 +15,9 @@ namespace NRules.Samples.ClaimsExpert.Service.Modules
                 cfg.AllowNullDestinationValues = false;
 
                 cfg.CreateMap<Claim, ClaimDto>()
-                    .ForMember(dest => dest.PatientFirstName, x => x.MapFrom(src => src.Patient.Name.FirstName))
-                    .ForMember(dest => dest.PatientMiddleName, x => x.MapFrom(src => src.Patient.Name.MiddleName))
-                    .ForMember(dest => dest.PatientLastName, x => x.MapFrom(src => src.Patient.Name.LastName));
+                    .ForMember(dest => dest.PatientFirstName, x => x.MapFrom(src => src.Patient!.Name.FirstName))
+                    .ForMember(dest => dest.PatientMiddleName, x => x.MapFrom(src => src.Patient!.Name.MiddleName))
+                    .ForMember(dest => dest.PatientLastName, x => x.MapFrom(src => src.Patient!.Name.LastName));
 
                 cfg.CreateMap<ClaimAlert, ClaimAlertDto>();
 

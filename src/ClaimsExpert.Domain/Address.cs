@@ -18,7 +18,7 @@ namespace NRules.Samples.ClaimsExpert.Domain
             return Line1 == other.Line1 && Line2 == other.Line2 && City == other.City && State == other.State && Zip == other.Zip;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Address other && Equals(other);
         }

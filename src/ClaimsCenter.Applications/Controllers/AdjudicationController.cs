@@ -35,8 +35,10 @@ namespace NRules.Samples.ClaimsCenter.Applications.Controllers
             _claimViewModel.Value.AdjudicateCommand = _adjudicateCommand;
         }
 
-        private void Adjudicate(ClaimDto claim)
+        private void Adjudicate(ClaimDto? claim)
         {
+            if (claim is null) return;
+
             using (var service = _adjudicationServiceFactory())
             {
                 service.Value.Adjudicate(new AdjudicationRequest {ClaimId = claim.Id});

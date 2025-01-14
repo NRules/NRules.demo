@@ -7,8 +7,8 @@ namespace NRules.Samples.ClaimsCenter.Applications.ViewModels
 {
     public class ClaimListViewModel : ViewModel<IClaimListView>
     {
-        private ObservableCollection<ClaimDto> _claims;
-        private ClaimDto _selectedClaim;
+        private ObservableCollection<ClaimDto> _claims = [];
+        private ClaimDto? _selectedClaim;
 
         public ClaimListViewModel(IClaimListView view) : base(view)
         {
@@ -16,13 +16,13 @@ namespace NRules.Samples.ClaimsCenter.Applications.ViewModels
 
         public ObservableCollection<ClaimDto> Claims
         {
-            get { return _claims; }
+            get => _claims;
             set { SetProperty(ref _claims, value); }
         }
 
-        public ClaimDto SelectedClaim
+        public ClaimDto? SelectedClaim
         {
-            get { return _selectedClaim; }
+            get => _selectedClaim;
             set { SetProperty(ref _selectedClaim, value); }
         }
     }

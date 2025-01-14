@@ -13,7 +13,7 @@ namespace NRules.Samples.ClaimsExpert.Service
 
     internal class ServiceController : IServiceController, IDisposable
     {
-        private Server _server;
+        private Server? _server;
 
         public ServiceController(ClaimServiceImpl claimService, AdjudicationServiceImpl adjudicationService, string grpcEndpointHostname, int grpcEndpointPort)
         {
@@ -32,7 +32,7 @@ namespace NRules.Samples.ClaimsExpert.Service
 
         public void Start()
         {
-            _server.Start();
+            _server?.Start();
         }
 
         public void Stop()

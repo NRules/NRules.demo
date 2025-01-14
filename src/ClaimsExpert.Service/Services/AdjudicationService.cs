@@ -22,20 +22,20 @@ namespace NRules.Samples.ClaimsExpert.Service.Services
             var claim = _claimRepository.GetById(request.ClaimId);
             Log.Information("Adjudicating claim. ClaimId={0}", request.ClaimId);
 
-            claim.Alerts.Clear();
+            claim.Alerts?.Clear();
             claim.Status = ClaimStatus.Open;
 
             ISession session = _sessionFactory.CreateSession();
             session.Insert(claim);
-            session.Insert(claim.Patient);
-            session.Insert(claim.Insured);
+            session.Insert(claim.Patient!);
+            session.Insert(claim.Insured!);
             session.Fire();
 
             var alerts = session.Query<ClaimAlert>();
 
             foreach (var alert in alerts)
             {
-                claim.Alerts.Add(alert);
+                claim.Alerts?.Add(alert);
             }
             _claimRepository.Save(claim);
 

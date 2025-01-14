@@ -8,8 +8,8 @@ namespace NRules.Samples.ClaimsExpert.Rules.NotificationRules
     {
         public override void Define()
         {
-            INotificationService service = null;
-            Claim claim = null;
+            INotificationService service = null!;
+            Claim claim = null!;
 
             Dependency()
                 .Resolve(() => service);

@@ -14,7 +14,7 @@ namespace NRules.Samples.ClaimsCenter.Presentation
 {
     public partial class App
     {
-        public IContainer Container { get; set; }
+        public IContainer? Container { get; set; }
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -37,7 +37,7 @@ namespace NRules.Samples.ClaimsCenter.Presentation
 
         protected override void OnExit(ExitEventArgs e)
         {
-            Container.Dispose();
+            Container?.Dispose();
             base.OnExit(e);
         }
 
@@ -51,7 +51,7 @@ namespace NRules.Samples.ClaimsCenter.Presentation
             HandleException(e.ExceptionObject as Exception, e.IsTerminating);
         }
 
-        private static void HandleException(Exception e, bool isTerminating)
+        private static void HandleException(Exception? e, bool isTerminating)
         {
             if (e == null) return;
 

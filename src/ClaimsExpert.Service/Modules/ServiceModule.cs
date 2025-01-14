@@ -16,7 +16,7 @@ namespace NRules.Samples.ClaimsExpert.Service.Modules
                     (pi, c) => c.Resolve<IConfiguration>()["grpcEndpointHostname"])
                 .WithParameter(
                     (pi, c) => pi.Name == "grpcEndpointPort",
-                    (pi, c) => Int32.Parse(c.Resolve<IConfiguration>()["grpcEndpointPort"]))
+                    (pi, c) => Int32.Parse(c.Resolve<IConfiguration>()["grpcEndpointPort"]!))
                 .AsImplementedInterfaces().SingleInstance();
             builder.RegisterType<AdjudicationServiceImpl>()
                 .AsSelf().InstancePerDependency();

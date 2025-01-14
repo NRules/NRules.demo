@@ -1,13 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>NRules.Samples.ClaimsExpert.Rules</AssemblyName>
     <RootNamespace>NRules.Samples.ClaimsExpert.Rules</RootNamespace>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NRules.Fluent" Version="0.9.0" />
+    <PackageReference Include="NRules.Fluent" />
   </ItemGroup>
 
   <ItemGroup>

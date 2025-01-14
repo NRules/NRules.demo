@@ -8,7 +8,7 @@ namespace NRules.Samples.ClaimsExpert.Rules.ValidationRules
     {
         public override void Define()
         {
-            Claim claim = null;
+            Claim claim = null!;
 
             When()
                 .Claim(() => claim, c => c.Open)

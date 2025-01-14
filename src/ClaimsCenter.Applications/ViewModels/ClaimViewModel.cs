@@ -8,17 +8,17 @@ namespace NRules.Samples.ClaimsCenter.Applications.ViewModels
 {
     public class ClaimViewModel : ViewModel<IClaimView>
     {
-        private ClaimDto _claim;
-        private ICommand _adjudicateCommand;
+        private ClaimDto? _claim;
+        private ICommand? _adjudicateCommand;
 
         public ClaimViewModel(IClaimView view)
             : base(view)
         {
         }
 
-        public ClaimDto Claim
+        public ClaimDto? Claim
         {
-            get { return _claim; }
+            get => _claim;
             set
             {
                 if (SetProperty(ref _claim, value))
@@ -29,13 +29,13 @@ namespace NRules.Samples.ClaimsCenter.Applications.ViewModels
             }
         }
 
-        public ICommand AdjudicateCommand
+        public ICommand? AdjudicateCommand
         {
-            get { return _adjudicateCommand; }
+            get => _adjudicateCommand;
             set { SetProperty(ref _adjudicateCommand, value); }
         }
 
-        public bool IsEnabled { get { return Claim != null; } }
-        public bool HasAlerts { get { return Claim != null && Claim.Alerts != null && Claim.Alerts.Any(); } }
+        public bool IsEnabled => Claim != null;
+        public bool HasAlerts => Claim != null && Claim.Alerts != null && Claim.Alerts.Any();
     }
 }

@@ -1,0 +1,29 @@
+<Project>
+
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="Autofac" Version="8.2.0" />
+    <PackageVersion Include="Automapper" Version="13.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
+    <PackageVersion Include="System.Waf.Wpf" Version="8.0.1" />
+    <PackageVersion Include="System.Data.SQLite" Version="1.0.119" />
+    <PackageVersion Include="Google.Protobuf" Version="3.29.3" />
+    <PackageVersion Include="Grpc" Version="2.46.6" />
+    <PackageVersion Include="Grpc.Tools" Version="2.69.0" />
+    <PackageVersion Include="FluentNHibernate" Version="3.4.0" />
+    <PackageVersion Include="NHibernate" Version="5.5.2" />
+    <PackageVersion Include="Serilog" Version="4.2.0" />
+    <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageVersion Include="Topshelf" Version="4.3.0" />
+    <PackageVersion Include="NRules" Version="1.0.1" />
+    <PackageVersion Include="NRules.Runtime" Version="1.0.1" />
+    <PackageVersion Include="NRules.Fluent" Version="1.0.1" />
+    <PackageVersion Include="NRules.RuleModel" Version="1.0.1" />
+  </ItemGroup>
+  
+</Project>

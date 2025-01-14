@@ -43,15 +43,15 @@ namespace NRules.Samples.ClaimsCenter.Applications.ViewModels
             _aboutCommand = new DelegateCommand(ShowAboutMessage);
         }
 
-        public ICommand AboutCommand => _aboutCommand;
-        public ICommand RefreshCommand { get; set; }
+        public ICommand? AboutCommand => _aboutCommand;
+        public ICommand? RefreshCommand { get; set; }
 
         public string Title => ApplicationInfo.ProductName;
 
         public object ClaimListView => _claimListViewModel.Value.View;
         public object ClaimView => _claimViewModel.Value.View;
 
-        public event CancelEventHandler Closing;
+        public event CancelEventHandler? Closing;
 
         public void Show()
         {
@@ -68,12 +68,12 @@ namespace NRules.Samples.ClaimsCenter.Applications.ViewModels
             Closing?.Invoke(this, e);
         }
 
-        private void ViewClosing(object sender, CancelEventArgs e)
+        private void ViewClosing(object? sender, CancelEventArgs e)
         {
             OnClosing(e);
         }
 
-        private void ViewClosed(object sender, EventArgs e)
+        private void ViewClosed(object? sender, EventArgs e)
         {
             _settings.Left = ViewCore.Left;
             _settings.Top = ViewCore.Top;

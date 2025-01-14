@@ -17,7 +17,7 @@ namespace NRules.Samples.ClaimsExpert.Domain
             return FirstName == other.FirstName && LastName == other.LastName && MiddleName == other.MiddleName;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Name other && Equals(other);
         }
