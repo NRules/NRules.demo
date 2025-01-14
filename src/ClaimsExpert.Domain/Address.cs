@@ -6,11 +6,11 @@ public struct Address
 {
     public static readonly Address Empty = new Address();
 
-    public string Line1 { get; set; }
-    public string Line2 { get; set; }
-    public string City { get; set; }
-    public string State { get; set; }
-    public string Zip { get; set; }
+    public string? Line1 { get; set; }
+    public string? Line2 { get; set; }
+    public string? City { get; set; }
+    public string? State { get; set; }
+    public string? Zip { get; set; }
     public bool IsEmpty => Equals(Empty);
 
     public bool Equals(Address other)

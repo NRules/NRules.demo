@@ -6,9 +6,9 @@ public struct Name
 {
     public static readonly Name Empty = new Name();
 
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string MiddleName { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+    public string? MiddleName { get; set; }
 
     public bool IsEmpty => Equals(Empty);
 

@@ -17,12 +17,12 @@ public class ClaimListViewModel : ViewModel<IClaimListView>
     public ObservableCollection<ClaimDto> Claims
     {
         get => _claims;
-        set { SetProperty(ref _claims, value); }
+        set => SetProperty(ref _claims, value);
     }
 
     public ClaimDto? SelectedClaim
     {
         get => _selectedClaim;
-        set { SetProperty(ref _selectedClaim, value); }
+        set => SetProperty(ref _selectedClaim, value);
     }
 }

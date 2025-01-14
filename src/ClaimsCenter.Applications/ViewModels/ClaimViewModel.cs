@@ -23,8 +23,8 @@ public class ClaimViewModel : ViewModel<IClaimView>
         {
             if (SetProperty(ref _claim, value))
             {
-                RaisePropertyChanged("IsEnabled");
-                RaisePropertyChanged("HasAlerts");
+                RaisePropertyChanged(nameof(IsEnabled));
+                RaisePropertyChanged(nameof(HasAlerts));
             }
         }
     }
@@ -32,9 +32,9 @@ public class ClaimViewModel : ViewModel<IClaimView>
     public ICommand? AdjudicateCommand
     {
         get => _adjudicateCommand;
-        set { SetProperty(ref _adjudicateCommand, value); }
+        set => SetProperty(ref _adjudicateCommand, value);
     }
 
     public bool IsEnabled => Claim != null;
-    public bool HasAlerts => Claim != null && Claim.Alerts != null && Claim.Alerts.Any();
+    public bool HasAlerts => Claim?.Alerts?.Any() == true;
 }

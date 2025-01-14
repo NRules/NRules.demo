@@ -47,17 +47,15 @@ internal class ClaimController : IClaimController
 
     public void Refresh()
     {
-        using (var claimService = _claimServiceFactory())
+        using var claimService = _claimServiceFactory();
+        var response = claimService.Value.GetAll(new GetAllClaimsRequest());
+        var claims = new List<ClaimDto>();
+        while (response.ResponseStream.MoveNext(CancellationToken.None).Result)
         {
-            var response = claimService.Value.GetAll(new GetAllClaimsRequest());
-            var claims = new List<ClaimDto>();
-            while (response.ResponseStream.MoveNext(CancellationToken.None).Result)
-            {
-                claims.Add(response.ResponseStream.Current);
-            }
-            _claimListViewModel.Value.Claims = new ObservableCollection<ClaimDto>(claims);
-            _claimViewModel.Value.Claim = null;
+            claims.Add(response.ResponseStream.Current);
         }
+        _claimListViewModel.Value.Claims = new ObservableCollection<ClaimDto>(claims);
+        _claimViewModel.Value.Claim = null;
     }
 
     public void RefreshSelected()
@@ -65,11 +63,9 @@ internal class ClaimController : IClaimController
         if (_claimListViewModel.Value.SelectedClaim == null) return;
         var selectedClaim = _claimListViewModel.Value.SelectedClaim;
         int claimIndex = _claimListViewModel.Value.Claims.IndexOf(selectedClaim);
-        using (var claimService = _claimServiceFactory())
-        {
-            var claim = claimService.Value.FindByClaimId(new FindByClaimIdRequest {ClaimId = selectedClaim.Id});
-            _claimListViewModel.Value.Claims[claimIndex] = claim;
-            _claimListViewModel.Value.SelectedClaim = claim;
-        }
+        using var claimService = _claimServiceFactory();
+        var claim = claimService.Value.FindByClaimId(new FindByClaimIdRequest {ClaimId = selectedClaim.Id});
+        _claimListViewModel.Value.Claims[claimIndex] = claim;
+        _claimListViewModel.Value.SelectedClaim = claim;
     }
 }

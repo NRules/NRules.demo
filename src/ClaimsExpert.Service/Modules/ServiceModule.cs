@@ -1,5 +1,4 @@
 using System;
-using System.Configuration;
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using NRules.Samples.ClaimsExpert.Service.Services;
