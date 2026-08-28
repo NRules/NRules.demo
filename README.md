@@ -41,5 +41,38 @@ Generate the database and start the service as above, then run the UI:
 dotnet run --project src/ClaimsCenter.Presentation
 ```
 
+## Service configuration
+
+The service reads `grpcEndpointHostname`, `grpcEndpointPort` and `databaseFile` from the
+`appsettings.json` next to its binary. The file is located relative to the binary rather
+than the current directory, so the service behaves the same however it is started; one
+consequence is that the `--contentRoot` switch and the `ASPNETCORE_CONTENTROOT`
+environment variable have no effect. Individual settings can still be overridden on the
+command line or through the environment:
+
+```
+dotnet run --project src/ClaimsExpert.Service -- --databaseFile=/var/lib/claimsexpert/ClaimsExpert.sqlite
+databaseFile=/var/lib/claimsexpert/ClaimsExpert.sqlite dotnet run --project src/ClaimsExpert.Service
+```
+
+The service listens on IPv4 only. `grpcEndpointHostname` accepts an IPv4 address, a host
+name, or `*` to listen on every IPv4 interface; a host name is bound on every IPv4 address
+it resolves to. An IPv6 address is rejected at startup.
+
+### Deploying a published build
+
+`databaseFile` defaults to a path relative to the build output, which only resolves
+correctly when running from the development layout. A published build therefore has to be
+told where the database lives, and fails at startup with a message naming the setting
+until it is:
+
+```
+dotnet publish src/ClaimsExpert.Service -c Release -o /opt/claimsexpert
+databaseFile=/var/lib/claimsexpert/ClaimsExpert.sqlite /opt/claimsexpert/NRules.Samples.ClaimsExpert.Service
+```
+
+Under systemd the equivalent is an `Environment=databaseFile=...` line in the unit. The
+service integrates with systemd notification and shuts down cleanly on `SIGTERM`.
+
 ---
 Copyright &copy; 2012-2026 [Sergiy Nikolayev](https://github.com/snikolayev) under the [MIT license](LICENSE.txt).
