@@ -1,0 +1,12 @@
+{
+  "solution": {
+    "path": "ClaimsAdjudication.sln",
+    "projects": [
+      "ClaimsExpert.Contract\\ClaimsExpert.Contract.csproj",
+      "ClaimsExpert.Domain\\ClaimsExpert.Domain.csproj",
+      "ClaimsExpert.Rules\\ClaimsExpert.Rules.csproj",
+      "ClaimsExpert.Service\\ClaimsExpert.Service.csproj",
+      "DataGenerator\\DataGenerator.csproj"
+    ]
+  }
+}

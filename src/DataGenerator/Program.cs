@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data.SQLite;
 using System.IO;
 
@@ -8,11 +8,9 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        string databaseFile = Path.GetFullPath(@"..\..\..\..\Data\ClaimsExpert.sqlite");
-        if (args.Length == 1)
-        {
-            databaseFile = args[0];
-        }
+        string databaseFile = args.Length == 1
+            ? Path.GetFullPath(args[0])
+            : ResolvePath("..", "..", "..", "..", "Data", "ClaimsExpert.sqlite");
 
         if (File.Exists(databaseFile))
         {
@@ -31,15 +29,24 @@ internal class Program
         connection.Open();
         connection.Trace += DatabaseTrace;
 
-        var scripts = new[] { @"Scripts\Schema.sql", @"Scripts\Data.sql" };
+        var scripts = new[] { "Schema.sql", "Data.sql" };
         foreach (var script in scripts)
         {
-            var scriptFile = Path.GetFullPath(script);
+            var scriptFile = ResolvePath("Scripts", script);
             Console.WriteLine("Executing script. File={0}", scriptFile);
-            string sql = File.ReadAllText(script);
+            string sql = File.ReadAllText(scriptFile);
             var command = new SQLiteCommand(sql, connection);
             command.ExecuteNonQuery();
         }
+    }
+
+    /// <summary>
+    /// Resolves a path relative to the application's base directory, so that the same
+    /// relative path works regardless of the current working directory.
+    /// </summary>
+    private static string ResolvePath(params string[] parts)
+    {
+        return Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, Path.Combine(parts)));
     }
 
     private static void EnsureDirectoryExists(string databaseFile)

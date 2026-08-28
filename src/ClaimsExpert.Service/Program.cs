@@ -1,65 +1,83 @@
-﻿using Autofac;
+using System;
+using System.Linq;
+using System.Net;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using NRules.Samples.ClaimsExpert.Domain.Modules;
 using NRules.Samples.ClaimsExpert.Service.Modules;
+using NRules.Samples.ClaimsExpert.Service.Services;
 using Serilog;
-using Topshelf;
 
 namespace NRules.Samples.ClaimsExpert.Service;
 
 public class Program
 {
-    private static IContainer? Container { get; set; }
-
     private static void Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
             .WriteTo.Console()
             .CreateLogger();
-            
-        HostFactory.Run(x =>
+
+        try
         {
-            x.Service<IServiceController>(s =>
-            {
-                s.ConstructUsing(name => BuildServiceController());
-                s.WhenStarted(sc => sc.Start());
-                s.WhenStopped(sc => Container?.Dispose());
-                s.AfterStartingService(() => Log.Information("Claims expert service started"));
-                s.AfterStoppingService(() => Log.Information("Claims expert service stopped"));
-            });
-            x.RunAsLocalSystem();
+            var builder = WebApplication.CreateBuilder(args);
 
-            x.SetDescription("Claims expert service");
-            x.SetDisplayName("Claims Expert");
-            x.SetServiceName("ClaimsExpert");
-        });
+            builder.Host.UseSystemd();
+            builder.Host.UseSerilog();
+            builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+            builder.Host.ConfigureContainer<ContainerBuilder>(ConfigureContainer);
 
-        Log.CloseAndFlush();
+            builder.WebHost.ConfigureKestrel(options => ConfigureEndpoint(options, builder.Configuration));
+            builder.Services.AddGrpc();
+
+            var app = builder.Build();
+            app.MapGrpcService<ClaimServiceImpl>();
+            app.MapGrpcService<AdjudicationServiceImpl>();
+
+            Log.Information("Claims expert service started");
+            app.Run();
+            Log.Information("Claims expert service stopped");
+        }
+        finally
+        {
+            Log.CloseAndFlush();
+        }
     }
 
-    private static IServiceController BuildServiceController()
+    private static void ConfigureContainer(ContainerBuilder builder)
     {
-        var config = BuildConfiguration();
-        Container = BuildContainer(config);
-        return Container.Resolve<IServiceController>();
-    }
-
-    private static IContainer BuildContainer(IConfiguration config)
-    {
-        var builder = new ContainerBuilder();
-        builder.Register(c => config).As<IConfiguration>();
         builder.RegisterAssemblyModules(typeof(ServiceModule).Assembly);
         builder.RegisterAssemblyModules(typeof(DomainModule).Assembly);
-        var container = builder.Build();
-        return container;
     }
 
-    private static IConfigurationRoot BuildConfiguration()
+    private static void ConfigureEndpoint(KestrelServerOptions options, IConfiguration config)
     {
-        var config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-            .Build();
-        return config;
+        var hostname = config["grpcEndpointHostname"] ?? "localhost";
+        var port = Int32.Parse(config["grpcEndpointPort"]!);
+
+        static void Insecure(ListenOptions listen) => listen.Protocols = HttpProtocols.Http2;
+
+        if (String.Equals(hostname, "localhost", StringComparison.OrdinalIgnoreCase))
+        {
+            options.ListenLocalhost(port, Insecure);
+        }
+        else if (hostname is "*" or "+" or "0.0.0.0")
+        {
+            options.ListenAnyIP(port, Insecure);
+        }
+        else
+        {
+            var address = IPAddress.TryParse(hostname, out var parsed)
+                ? parsed
+                : Dns.GetHostAddresses(hostname).First();
+            options.Listen(address, port, Insecure);
+        }
     }
 }
