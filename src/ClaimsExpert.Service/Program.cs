@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -26,6 +27,7 @@ public class Program
     private static int Main(string[] args)
     {
         IHostApplicationLifetime? lifetime = null;
+        var started = false;
 
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
@@ -49,13 +51,16 @@ public class Program
                 ContentRootPath = AppContext.BaseDirectory,
             });
 
+            // Each of these activates only under its own service manager and is a no-op otherwise,
+            // so the same binary runs as a systemd unit, a Windows service, or a console program.
             builder.Host.UseSystemd();
+            builder.Host.UseWindowsService();
             builder.Host.UseSerilog();
             builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
             builder.Host.ConfigureContainer<ContainerBuilder>(ConfigureContainer);
 
-            var addresses = ResolveListenAddresses(builder.Configuration);
             var port = ResolveListenPort(builder.Configuration);
+            var addresses = RemoveUnbindableAddresses(ResolveListenAddresses(builder.Configuration), port);
             builder.WebHost.ConfigureKestrel(options => ConfigureEndpoint(options, addresses, port));
             builder.Services.AddGrpc();
 
@@ -64,17 +69,25 @@ public class Program
             app.MapGrpcService<AdjudicationServiceImpl>();
 
             lifetime = app.Lifetime;
-            lifetime.ApplicationStarted.Register(() => Log.Information("Claims expert service started"));
+            lifetime.ApplicationStarted.Register(() =>
+            {
+                started = true;
+                Log.Information("Claims expert service started");
+            });
             lifetime.ApplicationStopped.Register(() => Log.Information("Claims expert service stopped"));
 
             app.Run();
             return 0;
         }
-        catch (OperationCanceledException) when (lifetime?.ApplicationStopping.IsCancellationRequested == true)
+        catch (OperationCanceledException) when (!started && lifetime?.ApplicationStopping.IsCancellationRequested == true)
         {
             // Shutdown was requested before the host finished starting. That is an orderly stop,
             // not a failure, so it must not be reported as one. Cancellation from any other source
             // is a genuine startup failure and falls through to the handler below.
+            //
+            // The check that the host never started is what keeps this narrow. Shutting down also
+            // cancels, so without it a hosted service that overran the shutdown timeout would be
+            // reported as a clean exit, and the host records that only at debug level.
             return 0;
         }
         catch (Exception ex)
@@ -99,6 +112,74 @@ public class Program
         foreach (var address in addresses)
         {
             options.Listen(address, port, listen => listen.Protocols = HttpProtocols.Http2);
+        }
+    }
+
+    /// <summary>
+    /// Drops addresses that cannot currently be bound, so that one unusable interface does not stop
+    /// the service. A host name on a multi-homed machine routinely resolves to addresses that come
+    /// and go, such as virtual switch, container and VPN adapters, or registrations left behind in
+    /// DNS. The endpoint this replaced tolerated that, because it reported one bound port for the
+    /// whole host name and could not represent a partial failure; Kestrel binds each address
+    /// separately and abandons startup on the first that fails, so they are probed here instead.
+    ///
+    /// A single address is never probed. There is nothing to degrade to, so the configuration is
+    /// either usable or not, and Kestrel's own error names the endpoint and the reason.
+    /// </summary>
+    private static IPAddress[] RemoveUnbindableAddresses(IPAddress[] addresses, int port)
+    {
+        if (addresses.Length < 2)
+        {
+            return addresses;
+        }
+
+        var bindable = new List<IPAddress>();
+        var failures = new List<string>();
+        foreach (var address in addresses)
+        {
+            var failure = DescribeBindFailure(address, port);
+            if (failure == null)
+            {
+                bindable.Add(address);
+            }
+            else
+            {
+                failures.Add($"{address}: {failure}");
+            }
+        }
+
+        if (bindable.Count == 0)
+        {
+            throw new InvalidOperationException(
+                $"None of the addresses configured by '{HostnameSetting}' could be bound on port {port} " +
+                $"({String.Join("; ", failures)}).");
+        }
+
+        foreach (var failure in failures)
+        {
+            Log.Warning("Not listening on an address that could not be bound. {Failure}", failure);
+        }
+
+        return bindable.ToArray();
+    }
+
+    /// <summary>
+    /// Returns why an address cannot be bound on the port, or null when it can be. The address is
+    /// bound and released rather than inferred from the interface list, because that asks the same
+    /// question Kestrel asks moments later. Another process can still take the port in between, in
+    /// which case Kestrel fails exactly as it would have without the probe.
+    /// </summary>
+    private static string? DescribeBindFailure(IPAddress address, int port)
+    {
+        try
+        {
+            using var socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            socket.Bind(new IPEndPoint(address, port));
+            return null;
+        }
+        catch (SocketException ex)
+        {
+            return ex.Message;
         }
     }
 

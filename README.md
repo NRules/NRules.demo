@@ -57,7 +57,15 @@ databaseFile=/var/lib/claimsexpert/ClaimsExpert.sqlite dotnet run --project src/
 
 The service listens on IPv4 only. `grpcEndpointHostname` accepts an IPv4 address, a host
 name, or `*` to listen on every IPv4 interface; a host name is bound on every IPv4 address
-it resolves to. An IPv6 address is rejected at startup.
+it resolves to, skipping with a warning any that cannot be bound. An IPv6 address is
+rejected at startup.
+
+Because of that, clients should address the service by IPv4 rather than by `localhost`,
+which is why `grpcEndpointAddress` in the UI is `http://127.0.0.1:8888`. Windows resolves
+`localhost` to `::1` first, and .NET tries resolved addresses in order, so the connection
+starts against an address nothing is listening on. Windows retransmits the refused `SYN`
+rather than failing immediately, which adds a delay of up to a second or two before the
+attempt on `127.0.0.1` succeeds.
 
 ### Deploying a published build
 
@@ -73,6 +81,22 @@ databaseFile=/var/lib/claimsexpert/ClaimsExpert.sqlite /opt/claimsexpert/NRules.
 
 Under systemd the equivalent is an `Environment=databaseFile=...` line in the unit. The
 service integrates with systemd notification and shuts down cleanly on `SIGTERM`.
+
+The same binary also runs as a Windows service; it detects its service manager at startup
+and behaves as a console application when started from a shell on either platform:
+
+```
+sc.exe create ClaimsExpert binPath= "C:\claimsexpert\NRules.Samples.ClaimsExpert.Service.exe" DisplayName= "Claims Expert" start= auto
+sc.exe description ClaimsExpert "Claims expert service"
+sc.exe start ClaimsExpert
+```
+
+`sc.exe` needs an elevated prompt, and the space after each `=` is part of its syntax.
+`start= auto` is what makes the service start on boot; without it the service is created
+but only ever starts on demand. To remove it again, `sc.exe delete ClaimsExpert`.
+
+Set `databaseFile` for a Windows service through the machine or service environment, since
+a service has no shell to set it in.
 
 ---
 Copyright &copy; 2012-2026 [Sergiy Nikolayev](https://github.com/snikolayev) under the [MIT license](LICENSE.txt).
