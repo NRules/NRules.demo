@@ -1,6 +1,6 @@
 using System;
-using System.Data.SQLite;
 using System.IO;
+using Microsoft.Data.Sqlite;
 
 namespace NRules.Samples.DataGenerator;
 
@@ -22,12 +22,11 @@ internal class Program
         EnsureDirectoryExists(databaseFile);
 
         Console.WriteLine("Creating database. File={0}", databaseFile);
-        SQLiteConnection.CreateFile(databaseFile);
 
-        string connectionString = $"Data Source={databaseFile};Version=3;";
-        using var connection = new SQLiteConnection(connectionString);
+        // Opening the connection creates the file; the provider has no explicit create.
+        string connectionString = new SqliteConnectionStringBuilder { DataSource = databaseFile }.ToString();
+        using var connection = new SqliteConnection(connectionString);
         connection.Open();
-        connection.Trace += DatabaseTrace;
 
         var scripts = new[] { "Schema.sql", "Data.sql" };
         foreach (var script in scripts)
@@ -35,7 +34,7 @@ internal class Program
             var scriptFile = ResolvePath("Scripts", script);
             Console.WriteLine("Executing script. File={0}", scriptFile);
             string sql = File.ReadAllText(scriptFile);
-            var command = new SQLiteCommand(sql, connection);
+            var command = new SqliteCommand(sql, connection);
             command.ExecuteNonQuery();
         }
     }
@@ -56,11 +55,5 @@ internal class Program
         {
             Directory.CreateDirectory(path);
         }
-    }
-
-    private static void DatabaseTrace(object sender, TraceEventArgs e)
-    {
-        Console.WriteLine(e.Statement);
-        Console.WriteLine();
     }
 }

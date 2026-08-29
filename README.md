@@ -6,6 +6,8 @@ This is a full stack demo application that uses NRules rules engine.
 
 The solution targets .NET 10. The claims expert service, the rules and the data
 generator are cross-platform; the ClaimsCenter UI is WPF and therefore Windows-only.
+The service and the data generator use Microsoft.Data.Sqlite, so they run on both
+x64 and arm64 processors.
 
 ### Linux / macOS
 
