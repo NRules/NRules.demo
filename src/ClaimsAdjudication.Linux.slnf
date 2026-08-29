@@ -2,6 +2,7 @@
   "solution": {
     "path": "ClaimsAdjudication.sln",
     "projects": [
+      "ClaimsCenter.Cli\\ClaimsCenter.Cli.csproj",
       "ClaimsExpert.Contract\\ClaimsExpert.Contract.csproj",
       "ClaimsExpert.Domain\\ClaimsExpert.Domain.csproj",
       "ClaimsExpert.Rules\\ClaimsExpert.Rules.csproj",

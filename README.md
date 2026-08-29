@@ -24,8 +24,21 @@ dotnet run --project src/ClaimsExpert.Service
 ```
 
 The service listens for gRPC over plaintext HTTP/2 on the endpoint configured in
-`src/ClaimsExpert.Service/appsettings.json` (`localhost:8888` by default). There is no
-cross-platform client; use any gRPC client built from `src/ClaimsExpert.Contract`.
+`src/ClaimsExpert.Service/appsettings.json` (`localhost:8888` by default).
+
+The cross-platform client is `ClaimsCenter.Cli`, which issues the same actions as the WPF UI:
+
+```
+dotnet run --project src/ClaimsCenter.Cli -- list
+dotnet run --project src/ClaimsCenter.Cli -- show 1
+dotnet run --project src/ClaimsCenter.Cli -- adjudicate 1
+```
+
+`adjudicate` re-fetches the claim and prints it, so the alerts the rules produced are visible
+straight away. `--json` switches any of the three to machine-readable output, `--version` prints
+the product name and version, and `--endpoint` or the `grpcEndpointAddress` environment variable
+overrides the address in `src/ClaimsCenter.Cli/appsettings.json`. The CLI exits 0 on success, 1 on
+a usage error and 2 when the request fails, including when the service is not running.
 
 ### Windows
 
@@ -40,6 +53,9 @@ Generate the database and start the service as above, then run the UI:
 ```
 dotnet run --project src/ClaimsCenter.Presentation
 ```
+
+The CLI is part of the full solution and contains no platform-specific code, so the same
+commands are available on Windows.
 
 ## Service configuration
 

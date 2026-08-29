@@ -28,6 +28,7 @@
     <PackageVersion Include="NRules.Runtime" Version="1.0.4" />
     <PackageVersion Include="NRules.Fluent" Version="1.0.4" />
     <PackageVersion Include="NRules.RuleModel" Version="1.0.4" />
+    <PackageVersion Include="System.CommandLine" Version="2.0.11" />
   </ItemGroup>
   
 </Project>
