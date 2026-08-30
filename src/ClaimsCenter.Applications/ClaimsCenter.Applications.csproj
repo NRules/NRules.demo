@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <AssemblyName>NRules.Samples.ClaimsCenter.Applications</AssemblyName>
     <RootNamespace>NRules.Samples.ClaimsCenter.Applications</RootNamespace>
     <Nullable>enable</Nullable>
@@ -11,6 +11,7 @@
     <PackageReference Include="Autofac" />
     <PackageReference Include="Microsoft.Extensions.Configuration" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+    <PackageReference Include="Grpc.Net.Client" />
     <PackageReference Include="System.Waf.Wpf" />
   </ItemGroup>
 

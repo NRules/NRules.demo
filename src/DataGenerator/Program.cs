@@ -1,6 +1,6 @@
-﻿using System;
-using System.Data.SQLite;
+using System;
 using System.IO;
+using Microsoft.Data.Sqlite;
 
 namespace NRules.Samples.DataGenerator;
 
@@ -8,11 +8,9 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        string databaseFile = Path.GetFullPath(@"..\..\..\..\Data\ClaimsExpert.sqlite");
-        if (args.Length == 1)
-        {
-            databaseFile = args[0];
-        }
+        string databaseFile = args.Length == 1
+            ? Path.GetFullPath(args[0])
+            : ResolvePath("..", "..", "..", "..", "Data", "ClaimsExpert.sqlite");
 
         if (File.Exists(databaseFile))
         {
@@ -24,22 +22,30 @@ internal class Program
         EnsureDirectoryExists(databaseFile);
 
         Console.WriteLine("Creating database. File={0}", databaseFile);
-        SQLiteConnection.CreateFile(databaseFile);
 
-        string connectionString = $"Data Source={databaseFile};Version=3;";
-        using var connection = new SQLiteConnection(connectionString);
+        // Opening the connection creates the file; the provider has no explicit create.
+        string connectionString = new SqliteConnectionStringBuilder { DataSource = databaseFile }.ToString();
+        using var connection = new SqliteConnection(connectionString);
         connection.Open();
-        connection.Trace += DatabaseTrace;
 
-        var scripts = new[] { @"Scripts\Schema.sql", @"Scripts\Data.sql" };
+        var scripts = new[] { "Schema.sql", "Data.sql" };
         foreach (var script in scripts)
         {
-            var scriptFile = Path.GetFullPath(script);
+            var scriptFile = ResolvePath("Scripts", script);
             Console.WriteLine("Executing script. File={0}", scriptFile);
-            string sql = File.ReadAllText(script);
-            var command = new SQLiteCommand(sql, connection);
+            string sql = File.ReadAllText(scriptFile);
+            var command = new SqliteCommand(sql, connection);
             command.ExecuteNonQuery();
         }
+    }
+
+    /// <summary>
+    /// Resolves a path relative to the application's base directory, so that the same
+    /// relative path works regardless of the current working directory.
+    /// </summary>
+    private static string ResolvePath(params string[] parts)
+    {
+        return Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, Path.Combine(parts)));
     }
 
     private static void EnsureDirectoryExists(string databaseFile)
@@ -49,11 +55,5 @@ internal class Program
         {
             Directory.CreateDirectory(path);
         }
-    }
-
-    private static void DatabaseTrace(object sender, TraceEventArgs e)
-    {
-        Console.WriteLine(e.Statement);
-        Console.WriteLine();
     }
 }
